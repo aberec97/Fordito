@@ -15,14 +15,17 @@ MongoClient.connect('mongodb://localhost:27017/', {
 
 
 app.get('/', 
-    (req, res) => 
-        res.send('Hello World!')
+    (req, res) => {
+        db.collection('ujKollekcio').find().toArray( (err, cucc) => {
+            res.send(cucc)
+        })
+    }
 )
 
 app.post('/',
     (req, res) => {
         console.log(req.body)
-        db.collection('mammals').insertOne(req.body, cucc => {
+        db.collection('ujKollekcio').insertOne(req.body, cucc => {
             res.send( cucc )
         })
     }
