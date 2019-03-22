@@ -22,6 +22,15 @@ app.get('/',
     }
 )
 
+app.post('/keres',
+(req, res) => {
+    db.collection('ujKollekcio').find({wordHun: req.body.translateWord}).toArray( (err,cucc) => {  
+        res.send(cucc.wordEng)
+    })
+    
+})
+
+
 app.post('/',
     (req, res) => {
         console.log(req.body)
