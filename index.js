@@ -13,31 +13,33 @@ MongoClient.connect('mongodb://localhost:27017/', {
     db = client.db('legyen')
 })
 
-
-app.get('/', 
-    (req, res) => {
-        db.collection('ujKollekcio').find().toArray( (err, cucc) => {
-            res.send(cucc)
-        })
-    }
-)
-
-app.post('/keres',
-(req, res) => {
-    db.collection('ujKollekcio').find({wordHun: req.body.translateWord}).toArray( (err,cucc) => {  
-        res.send(cucc.wordEng)
+app.post('/insert', (req, res) => {
+    db.collection('szavak').insertOne(req.body, cucc => {
+        res.sendStatus(201)
     })
-    
 })
 
-
-app.post('/',
-    (req, res) => {
-        console.log(req.body)
-        db.collection('ujKollekcio').insertOne(req.body, cucc => {
-            res.send( cucc )
-        })
-    }
-)
+app.post('/fordit', (req, res) => {
+    let actualWord = req.body.szo
+    db.collection('szavak').findOne({magyar : actualWord}).then(toAngol => {
+        if(!toAngol){
+            db.collection('szavak').findOne({angol : actualWord}).then(toMagyar => {
+                if(!toMagyar){
+                    res.send('404')
+                    return
+                } else {
+                res.send(toMagyar.magyar)
+                return
+                }
+            })
+        } else {
+            res.send(toAngol.angol)
+        }
+    })
+    /* .toArray( (err,cucc) => {  
+        console.log(cucc)
+        res.send(cucc)
+    }) */
+})
 
 app.listen(8082)
